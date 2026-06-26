@@ -8,6 +8,8 @@ Shader "Custom/UIRedGlowShader"
         _GlowColor ("Glow Color", Color) = (1,0,0,1) // 要匹配的颜色
         _ColorSensitivity ("Color Sensitivity", Range(0, 1)) = 0.5 // 颜色匹配灵敏度
         _GlowIntensity ("Glow Intensity", Float) = 2.0 // 发光强度
+        _FlashSpeed ("Flash Speed", Float) = 2.0 // 闪烁速度
+        _FlashMin ("Flash Min", Range(0, 1)) = 0.15 // 闪烁最低亮度比例
 
         // --- UI Masking Properties ---
         _StencilComp ("Stencil Comparison", Float) = 8
@@ -76,6 +78,8 @@ Shader "Custom/UIRedGlowShader"
             fixed4 _GlowColor;
             float _ColorSensitivity;
             float _GlowIntensity;
+            float _FlashSpeed;
+            float _FlashMin;
             float4 _ClipRect;
 
             v2f vert(appdata_t v)
@@ -108,8 +112,11 @@ Shader "Custom/UIRedGlowShader"
                 float glowFromDistance = 1.0 - smoothstep(0.0, _ColorSensitivity, colorDistance);
                 float finalGlowFactor = glowFromDistance * redDominance;
                 
+                // 时间驱动的脉冲闪烁
+                float pulse = _FlashMin + (1.0 - _FlashMin) * (0.5 + 0.5 * sin(_Time.y * _FlashSpeed * 6.28318));
+                
                 // 计算最终的发光颜色
-                fixed4 emission = baseColor * finalGlowFactor * _GlowIntensity;
+                fixed4 emission = baseColor * finalGlowFactor * _GlowIntensity * pulse;
 
                 // 最终颜色 = 基础颜色 + 发光颜色
                 fixed4 finalColor = baseColor + emission;
