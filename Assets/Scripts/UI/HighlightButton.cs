@@ -15,13 +15,18 @@ namespace UI
         [SerializeField] private Sprite _highlightSprite;
 
         public System.Action OnClicked;
+        public Sprite HighlightSprite { get => _highlightSprite; set => _highlightSprite = value; }
 
         private bool _isHovered;
+        private Color _savedColor;
 
         private void Awake()
         {
             if (_targetImage == null)
                 _targetImage = GetComponent<Image>();
+            var cr = GetComponent<CanvasRenderer>();
+            if (cr != null)
+                cr.cullTransparentMesh = false;
         }
 
         private void UpdateVisual()
@@ -33,12 +38,19 @@ namespace UI
         public void OnPointerEnter(PointerEventData eventData)
         {
             _isHovered = true;
+            if (_targetImage != null)
+            {
+                _savedColor = _targetImage.color;
+                _targetImage.color = Color.white;
+            }
             UpdateVisual();
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
             _isHovered = false;
+            if (_targetImage != null)
+                _targetImage.color = _savedColor;
             UpdateVisual();
         }
 
