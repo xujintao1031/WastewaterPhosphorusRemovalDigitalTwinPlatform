@@ -20,6 +20,9 @@ namespace UI
                 _bottomPanel = GameObject.Find("Canvas/BottomPanel");
             if (_bottomPanel != null)
                 _bottomPanel.SetActive(false);
+
+            _currentIndex = -1;
+            SelectTab(0);
         }
 
         private void OnDisable()

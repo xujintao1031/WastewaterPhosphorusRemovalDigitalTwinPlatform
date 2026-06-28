@@ -44,6 +44,8 @@ namespace UI
 
         private void OnProcessClicked()
         {
+            if (!gameObject.activeInHierarchy)
+                return;
             if (_routine != null)
                 StopCoroutine(_routine);
             _routine = StartCoroutine(FlashRoutine());
