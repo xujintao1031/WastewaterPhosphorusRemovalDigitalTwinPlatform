@@ -6,11 +6,14 @@ namespace UI
     public class TopPanelController : MonoBehaviour
     {
         [SerializeField] private Text _timeText;
+        [SerializeField] private Button exitBtn;
 
         private void Start()
         {
             if (_timeText != null)
                 InvokeRepeating(nameof(UpdateTime), 0f, 1f);
+            if(exitBtn != null)
+                exitBtn.onClick.AddListener(QuitApplication);
         }
 
         private void UpdateTime()

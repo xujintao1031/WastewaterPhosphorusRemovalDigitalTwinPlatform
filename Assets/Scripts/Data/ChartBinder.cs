@@ -71,6 +71,10 @@ namespace Data
             chart.EnsureChartComponent<Title>().text = title;
             chart.EnsureChartComponent<YAxis>().axisLabel.numericFormatter = "0.##";
 
+            var tooltip = chart.EnsureChartComponent<Tooltip>();
+            tooltip.titleFormatter = "{b}";
+            tooltip.itemFormatter = "{c}";
+
             for (int i = 0; i < labels.Count; i++)
             {
                 chart.AddXAxisData(labels[i]);

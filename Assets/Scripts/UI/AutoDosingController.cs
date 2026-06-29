@@ -17,7 +17,7 @@ namespace UI
             _popupPanel.SetActive(true);
             _progressBar.fillAmount = 0f;
             if (_statusText != null)
-                _statusText.text = "正在制药中...";
+                _statusText.text = "正在加药中...";
             StartCoroutine(RunProgress());
         }
 
