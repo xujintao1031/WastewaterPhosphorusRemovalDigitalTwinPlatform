@@ -5,6 +5,6 @@
        loads of the Unity-generated projects. Unity's own compilation ignores
        this file. Safe to delete; Locus recreates it while the feature is on. -->
   <ItemGroup>
-    <Analyzer Include="C:\Users\xujintao23\AppData\Roaming\locus\csharp-lsp\unity-analyzers\1.26.0\Microsoft.Unity.Analyzers.dll" />
+    <Analyzer Include="C:\Users\xjt14\AppData\Roaming\locus\csharp-lsp\unity-analyzers\1.26.0\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
 </Project>

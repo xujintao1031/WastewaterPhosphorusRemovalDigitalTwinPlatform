@@ -13,6 +13,9 @@ namespace Data
     {
         public WaterQualityDataManager dataManager;
         public LineChart chart;
+        public UnityEngine.UI.Image quarterlyImage;
+        public Sprite[] quarterlySprites;
+        public Sprite[] yearlySprites;
 
         private void Start()
         {
@@ -24,6 +27,32 @@ namespace Data
 
         private void UpdateChart()
         {
+            int timeIdx = dataManager.TimeIndex;
+
+            bool showChart = timeIdx < 3;
+            chart.gameObject.SetActive(showChart);
+
+            if (quarterlyImage != null)
+            {
+                bool showImage = timeIdx >= 3;
+                quarterlyImage.gameObject.SetActive(showImage);
+                if (showImage)
+                {
+                    if (timeIdx == 3 && quarterlySprites != null && dataManager.StageIndex < quarterlySprites.Length)
+                    {
+                        quarterlyImage.sprite = quarterlySprites[dataManager.StageIndex];
+                        quarterlyImage.SetNativeSize();
+                    }
+                    else if (timeIdx == 4 && yearlySprites != null && dataManager.ElementIndex < yearlySprites.Length)
+                    {
+                        quarterlyImage.sprite = yearlySprites[dataManager.ElementIndex];
+                        quarterlyImage.SetNativeSize();
+                    }
+                }
+            }
+
+            if (!showChart) return;
+
             var (labels, values) = dataManager.GetLabelsAndValues();
             if (labels.Count == 0) return;
 
@@ -32,6 +61,8 @@ namespace Data
                 0 => "每日",
                 1 => "每周",
                 2 => "每月",
+                3 => "季度",
+                4 => "年度",
                 _ => ""
             };
             string title = $"{timeLabel} — {dataManager.CurrentStage} — {dataManager.CurrentElement}";

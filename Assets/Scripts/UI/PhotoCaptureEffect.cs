@@ -12,6 +12,7 @@ namespace UI
     {
         [SerializeField] private Image _flashOverlay;
         [SerializeField] private Image _photoImage;
+        [SerializeField] private Text state;
         [SerializeField] private HighlightButton _triggerButton;
         [SerializeField] private float _flashDuration = 0.35f;
         [SerializeField] private float _pulseStrength = 0.06f;
@@ -86,6 +87,7 @@ namespace UI
                 _photoImage.transform.localScale = Vector3.one;
 
             _routine = null;
+            state.text = "状态：拍摄完成";
         }
     }
 }

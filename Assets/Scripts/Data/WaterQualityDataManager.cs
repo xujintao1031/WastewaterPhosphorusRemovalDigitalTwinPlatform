@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -90,8 +91,14 @@ namespace Data
         private void SetupDropdowns()
         {
             timeDropdown.ClearOptions();
-            timeDropdown.AddOptions(new List<string> { "每天", "每周", "每月" });
-            timeDropdown.onValueChanged.AddListener(idx => { TimeIndex = idx; RebuildFiltered(); });
+            timeDropdown.AddOptions(new List<string> { "每天", "每周", "每月", "季度", "年度" });
+            timeDropdown.onValueChanged.AddListener(idx =>
+            {
+                TimeIndex = idx;
+                stageDropdown.transform.parent.gameObject.SetActive(idx != 4);
+                elementDropdown.transform.parent.gameObject.SetActive(idx != 3);
+                RebuildFiltered();
+            });
 
             stageDropdown.ClearOptions();
             stageDropdown.AddOptions(new List<string>(Stages));
@@ -151,9 +158,75 @@ namespace Data
                 case 2:
                     foreach (var m in FilteredMonthly) { labels.Add($"{m.Year} {m.Month}"); values.Add(GetElementValue(m, ElementIndex)); }
                     break;
+                case 3:
+                    BuildQuarterlyAggregate(labels, values);
+                    break;
+                case 4:
+                    BuildYearlyAggregate(labels, values);
+                    break;
             }
 
             return (labels, values);
+        }
+
+        private void BuildQuarterlyAggregate(List<string> labels, List<float> values)
+        {
+            var groups = new Dictionary<(int year, int quarter), (float sum, int count)>();
+            foreach (var d in FilteredDaily)
+            {
+                if (!TryParseDate(d.Date, out var year, out var month, out _))
+                    continue;
+                int q = (month - 1) / 3 + 1;
+                var key = (year, q);
+                var v = GetElementValue(d, ElementIndex);
+                if (groups.TryGetValue(key, out var acc))
+                    groups[key] = (acc.sum + v, acc.count + 1);
+                else
+                    groups[key] = (v, 1);
+            }
+
+            foreach (var kv in groups.OrderBy(kv => kv.Key.year).ThenBy(kv => kv.Key.quarter))
+            {
+                labels.Add($"{kv.Key.year} Q{kv.Key.quarter}");
+                values.Add(kv.Value.sum / kv.Value.count);
+            }
+        }
+
+        private void BuildYearlyAggregate(List<string> labels, List<float> values)
+        {
+            var groups = new Dictionary<int, (float sum, int count)>();
+            foreach (var d in FilteredDaily)
+            {
+                if (!TryParseDate(d.Date, out var year, out _, out _))
+                    continue;
+                var v = GetElementValue(d, ElementIndex);
+                if (groups.TryGetValue(year, out var acc))
+                    groups[year] = (acc.sum + v, acc.count + 1);
+                else
+                    groups[year] = (v, 1);
+            }
+
+            foreach (var kv in groups.OrderBy(kv => kv.Key))
+            {
+                labels.Add(kv.Key.ToString());
+                values.Add(kv.Value.sum / kv.Value.count);
+            }
+        }
+
+        private static bool TryParseDate(string s, out int year, out int month, out int day)
+        {
+            year = month = day = 0;
+            if (string.IsNullOrEmpty(s)) return false;
+            // Try common formats
+            string[] fmts = { "yyyy-MM-dd", "yyyy/MM/dd", "yyyy.MM.dd", "yyyyMMdd", "yyyy-M-d", "yyyy/M/d", "yyyy.M.d" };
+            if (System.DateTime.TryParseExact(s, fmts, null, System.Globalization.DateTimeStyles.None, out var dt))
+            {
+                year = dt.Year;
+                month = dt.Month;
+                day = dt.Day;
+                return true;
+            }
+            return false;
         }
     }
 }
