@@ -14,10 +14,13 @@ namespace UI
         [SerializeField] private HighlightButton _processButton;
         [SerializeField] private float _flashDuration = 5f;
         [SerializeField] private float _glowIntensity = 35f;
+        [SerializeField] private bool _alwaysLit = false;
 
         private Material _materialInstance;
         private Coroutine _routine;
+        private float _originalFlashSpeed;
         private static readonly int GlowIntensityId = Shader.PropertyToID("_GlowIntensity");
+        private static readonly int FlashSpeedId = Shader.PropertyToID("_FlashSpeed");
 
         private void Start()
         {
@@ -28,6 +31,7 @@ namespace UI
             }
 
             _materialInstance = _targetImage.material;
+            _originalFlashSpeed = _materialInstance.GetFloat(FlashSpeedId);
             _materialInstance.SetFloat(GlowIntensityId, 0f);
 
             if (_processButton != null)
@@ -48,6 +52,10 @@ namespace UI
                 return;
             if (_routine != null)
                 StopCoroutine(_routine);
+
+            if (_alwaysLit)
+                _materialInstance.SetFloat(FlashSpeedId, 0f);
+
             _routine = StartCoroutine(FlashRoutine());
         }
 
@@ -56,6 +64,10 @@ namespace UI
             _materialInstance.SetFloat(GlowIntensityId, _glowIntensity);
             yield return new WaitForSeconds(_flashDuration);
             _materialInstance.SetFloat(GlowIntensityId, 0f);
+
+            if (_alwaysLit)
+                _materialInstance.SetFloat(FlashSpeedId, _originalFlashSpeed);
+
             _routine = null;
         }
     }

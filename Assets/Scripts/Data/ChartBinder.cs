@@ -68,8 +68,21 @@ namespace Data
             string title = $"{timeLabel} — {dataManager.CurrentStage} — {dataManager.CurrentElement}";
 
             chart.ClearData();
+
+            string xUnit = timeLabel switch { "每日" => "天", "每周" => "周", "每月" => "月", _ => "" };
+
+            var xAxis = chart.EnsureChartComponent<XAxis>();
+            xAxis.axisName.show = true;
+            xAxis.axisName.name = xUnit;
+            xAxis.axisName.labelStyle.textStyle.color = Color.white;
+
             chart.EnsureChartComponent<Title>().text = title;
-            chart.EnsureChartComponent<YAxis>().axisLabel.numericFormatter = "0.##";
+
+            var yAxis = chart.EnsureChartComponent<YAxis>();
+            yAxis.axisLabel.numericFormatter = "0.##";
+            yAxis.axisName.show = true;
+            yAxis.axisName.name = "mg/L";
+            yAxis.axisName.labelStyle.textStyle.color = Color.white;
 
             var tooltip = chart.EnsureChartComponent<Tooltip>();
             tooltip.titleFormatter = "{b}";
@@ -78,7 +91,7 @@ namespace Data
             for (int i = 0; i < labels.Count; i++)
             {
                 chart.AddXAxisData(labels[i]);
-                chart.AddData(0, (double)values[i]);
+                chart.AddData(0, i + 1, (double)values[i]);
             }
         }
     }

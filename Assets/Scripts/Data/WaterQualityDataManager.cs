@@ -150,13 +150,25 @@ namespace Data
             switch (TimeIndex)
             {
                 case 0:
-                    foreach (var d in FilteredDaily) { labels.Add(d.Date); values.Add(GetElementValue(d, ElementIndex)); }
+                    for (int i = 0; i < FilteredDaily.Count; i++)
+                    {
+                        labels.Add($"第{i + 1}天");
+                        values.Add(GetElementValue(FilteredDaily[i], ElementIndex));
+                    }
                     break;
                 case 1:
-                    foreach (var w in FilteredWeekly) { labels.Add($"{w.Year} {w.Week}"); values.Add(GetElementValue(w, ElementIndex)); }
+                    for (int i = 0; i < FilteredWeekly.Count; i++)
+                    {
+                        labels.Add($"第{i + 1}周");
+                        values.Add(GetElementValue(FilteredWeekly[i], ElementIndex));
+                    }
                     break;
                 case 2:
-                    foreach (var m in FilteredMonthly) { labels.Add($"{m.Year} {m.Month}"); values.Add(GetElementValue(m, ElementIndex)); }
+                    for (int i = 0; i < FilteredMonthly.Count; i++)
+                    {
+                        labels.Add($"第{i + 1}月");
+                        values.Add(GetElementValue(FilteredMonthly[i], ElementIndex));
+                    }
                     break;
                 case 3:
                     BuildQuarterlyAggregate(labels, values);

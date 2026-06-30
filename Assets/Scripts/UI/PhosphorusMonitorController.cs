@@ -13,6 +13,13 @@ namespace UI
 
         private void Start()
         {
+            if (_resultPopup != null)
+            {
+                var popup = _resultPopup.GetComponent<CalculationResultPopup>();
+                if (popup != null)
+                    popup.EnsureInitialized();
+            }
+
             if (_calcButton != null)
                 _calcButton.OnClicked += ShowResult;
         }
